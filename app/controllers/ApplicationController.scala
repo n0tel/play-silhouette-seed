@@ -7,7 +7,10 @@ import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import forms._
 import models.User
+import play.api.data.Form
+import play.api.data.Forms._
 import play.api.i18n.MessagesApi
+import play.api.mvc.Action
 
 import scala.concurrent.Future
 
@@ -23,6 +26,14 @@ class ApplicationController @Inject() (
   val env: Environment[User, CookieAuthenticator],
   socialProviderRegistry: SocialProviderRegistry)
   extends Silhouette[User, CookieAuthenticator] {
+
+  def post = Action(parse.json) { implicit request =>
+    (request.body \ "name").asOpt[String] match {
+      case Some(n) => Ok(n)
+      case None => BadRequest("name not specified")
+    }
+  }
+
 
   /**
    * Handles the index action.
